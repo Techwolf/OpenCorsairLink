@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 	}
 	libusb_set_debug(context, 3);
 
-	corsairlink_device_scanner(context);
+	int device_count = corsairlink_device_scanner(context);
 	msg_debug("DEBUG: scan done, start routines\n");
 	msg_debug("DEBUG: device_number = %d\n", device_number);
 
@@ -192,6 +192,14 @@ int main(int argc, char *argv[])
 			psu_settings(scanlist[device_number], settings);
 		} else {
 			hydro_settings(scanlist[device_number], settings);
+		}
+	} else {
+		for (int i=0; i<device_count; i++) {
+			if (scanlist[i].device->driver == &corsairlink_driver_rmi) {
+				psu_settings(scanlist[i], settings);
+			} else {
+				hydro_settings(scanlist[i], settings);
+			}
 		}
 	}
 
